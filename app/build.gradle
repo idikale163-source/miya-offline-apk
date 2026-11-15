@@ -1,0 +1,69 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+def ksFile = System.getenv("MIYA_KEYSTORE_FILE")
+
+android {
+    namespace 'app.miya.offline'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "app.miya.offline"
+        minSdk 26
+        // targetSdk 34：与 FloatShell 保持一致，避开 targetSdk 35+ 的强制边到边（edge-to-edge）
+        // 行为变更。targetSdk 35 起系统强制让窗口铺到状态栏/导航栏后面，
+        // 若应用没有正确吃 insets，就会在顶部/底部露出一条黑带——这正是 @用户
+        // 之前反复遇到的"黑条条"。留在 34 并把 insets 全部吃掉，才是干净的全屏。
+        targetSdk 34
+        versionCode 100
+        versionName "1.0.0"
+    }
+
+    if (ksFile) {
+        signingConfigs {
+            release {
+                storeFile file(ksFile)
+                storePassword System.getenv("MIYA_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("MIYA_KEY_ALIAS")
+                keyPassword System.getenv("MIYA_KEY_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            if (ksFile) signingConfig signingConfigs.release
+        }
+        debug {
+            if (ksFile) signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions { jvmTarget = '17' }
+
+    // assets 不做压缩：WebView 要按原字节读，压缩会影响 ?v= 查询参数处理与 OPFS 写入
+    androidResources {
+        noCompress 'js', 'css', 'html', 'json', 'svg', 'png', 'jpg', 'woff', 'woff2', 'ttf'
+    }
+
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/DEPENDENCIES', 'META-INF/LICENSE*', 'META-INF/NOTICE*']
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.webkit:webkit:1.12.1'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+}

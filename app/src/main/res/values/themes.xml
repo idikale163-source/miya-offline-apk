@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+      黑条根因之二：窗口背景色。
+      默认 AppCompat 主题的 windowBackground 是深色/黑色，在全屏 + insets 铺满时，
+      只要 WebView 有一瞬间没填满（首帧加载、键盘弹起、手势导航区），
+      露出的就是窗口背景 = 黑色 → 用户看到"黑条条"。
+      这里把 windowBackground 直接设成 Miya 的页面底色 #ffffff，即使露出也是白的，
+      视觉上完全无缝。
+    -->
+    <style name="Theme.Miya" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="p">shortEdges</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowDisablePreview">false</item>
+    </style>
+</resources>
